@@ -1,0 +1,85 @@
+#!/usr/bin/env python
+
+import struct
+import math
+from CCL.AmbManager import AmbManager
+
+# LFTRR/LORR CAN bus definitions
+CAN_CHANNEL = 1
+CAN_NODE = 0x22
+
+# Monitor point definitions
+RCA_STATUS = 0x00001
+RCA_RX_OPT_PWR = 0x00007
+RCA_TE_LENGTH = 0x00011
+RCA_TE_OFFSET_COUNTER = 0x00012
+
+# Status monitor point bit definitions
+# Byte 1
+FLAG_DCM_LOCKED = 0b1
+FLAG_12V_OUT_OF_RANGE = 0b10
+FLAG_15V_OUT_OF_RANGE = 0b100
+FLAG_RX_OPT_PWR_ERROR = 0b1000
+FLAG_2GHZ_UNLOCKED = 0b10000 # clear with CLEAR_FLAGS
+FLAG_125MHZ_UNLOCKED = 0b100000 # clear with CLEAR_FLAGS
+# Byte 2
+FLAG_TE_SHORT = 0b1 # clear with CLEAR_FLAGS
+FLAG_TE_LONG = 0b10 # clear with CLEAR_FLAGS
+
+
+mgr = AmbManager('DMC')
+
+# Received optical power
+monitor = mgr.monitor(CAN_CHANNEL, CAN_NODE, RCA_RX_OPT_PWR)
+power_raw = struct.unpack(">H", monitor[0])
+power_mw = power_raw[0] * 20/4095
+power_dbm = 10 * math.log10(power_mw)
+
+print(f"LFTRR power: {power_mw:.2f}[mW]")
+print(f"LFTRR power: {power_dbm:.2f}[dBm]")
+
+# TE length
+monitor = mgr.monitor(CAN_CHANNEL, CAN_NODE, RCA_TE_LENGTH)
+te_length = struct.unpack('>I', b'\0' + monitor[0])[0]
+
+print(f"TE length: {te_length}")
+
+# TE offset
+monitor = mgr.monitor(CAN_CHANNEL, CAN_NODE, RCA_TE_OFFSET_COUNTER)
+te_offset = struct.unpack('>I', b'\0' + monitor[0])[0]
+
+print(f"TE offset: {te_offset}")
+
+# STATUS bits
+monitor = mgr.monitor(CAN_CHANNEL, CAN_NODE, RCA_STATUS)
+status = struct.unpack('2B', monitor[0])
+
+flag_dcm_locked = 1 * bool(status[0] & FLAG_DCM_LOCKED)
+flag_12v_out_of_range = 1 * bool(status[0] & FLAG_12V_OUT_OF_RANGE)
+flag_15v_out_of_range = 1 * bool(status[0] & FLAG_15V_OUT_OF_RANGE)
+flag_rx_opt_pwr_error = 1 * bool(status[0] & FLAG_RX_OPT_PWR_ERROR)
+flag_2ghz_unlocked = 1 * bool(status[0] & FLAG_2GHZ_UNLOCKED)
+flag_125mhz_unlocked = 1 * bool(status[0] & FLAG_125MHZ_UNLOCKED)
+flag_te_short = 1 * bool(status[1] & FLAG_TE_SHORT)
+flag_te_long = 1 * bool(status[1] & FLAG_TE_LONG)
+
+flags = []
+if not flag_dcm_locked:
+    flags.append("DCM unlocked")
+if flag_12v_out_of_range:
+    flags.append("12V out of range")
+if flag_15v_out_of_range:
+    flags.append("15V out of range")
+if not flag_rx_opt_pwr_error:
+    flags.append("Rx optical signal not detected")
+if flag_2ghz_unlocked:
+    flags.append("2 GHz unlocked")
+if flag_125mhz_unlocked:
+    flags.append("125 MHz unlocked")
+if not flag_te_short:
+    flags.append("TE short detected")
+if flag_te_long:
+    flags.append("TE long detected")
+
+print(f"Error flags: {flags}")
+
