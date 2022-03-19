@@ -126,7 +126,7 @@ def status():
 
     table.add_row(
         "Error flags",
-        "\n".join(flags)
+        "[red]" + "\n".join(flags) + "[/red]"
     )
     console = Console()
     print()
