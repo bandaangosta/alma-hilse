@@ -3,7 +3,6 @@
 import struct
 import sys
 import math
-from turtle import clear
 from CCL.AmbManager import AmbManager
 
 # Following PYTHONPATH runtime modification is temporary. This should be done with proper package installation (TODO).
