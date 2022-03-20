@@ -51,7 +51,9 @@ def status():
     try:
         mgr = AmbManager('DMC')
     except:
+        print()
         print("Failed to instantiate DMC AmbManager")
+        print()
         return
 
     table = Table(title='HILSE LFTRR STATUS')
@@ -123,6 +125,11 @@ def status():
         flags.append("TE short detected")
     if flag_te_long:
         flags.append("TE long detected")
+
+    table.add_row(
+        "125 MHz",
+        f"[green]Locked[/green]" if not flag_125mhz_unlocked else f"[red]Unlocked[/red]"
+    )
 
     table.add_row(
         "Error flags",
