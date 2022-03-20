@@ -43,6 +43,25 @@ RCA_CLEAR_FLAGS = 0x00082
 # Command-line application commands and subcommands based in Typer
 app = typer.Typer(add_completion=True)
 
+@app.callback()
+def callback():
+    """
+    Obtain basic status of HILSE LFTRR device and issue resync command.
+
+    Referring to the status, a stripped down version of the LORR status is presented,
+    focusing only on variables relevant to HILSE.
+
+    Usage:
+
+    \b
+    hil_lftrr.py        # Display LFTRR status
+    hil_lftrr.py status # Display LFTRR status
+    hil_lftrr.py resync # Resync TE to central reference
+    hil_lftrr.py clear  # Clear TE and PLL error flags
+
+    """
+
+
 @app.command(short_help='LFTRR healthcheck')
 def status():
     '''General healthcheck of the LFTRR, limited to relevant variables for HILSE'''
@@ -73,7 +92,7 @@ def status():
 
     table.add_row(
         "Rx optical power",
-        f"{power_mw:.2f} \[mW]" + " / " + f"[green]{power_dbm:.2f}[/green] \[dBm]" if good_power else f"[red]{power_dbm:.2f}[/red] \[dBm]"
+        f"[green]{power_dbm:.2f}[/green] \[dBm]" if good_power else f"[red]{power_dbm:.2f}[/red] \[dBm]"
     )
 
     # TE length
