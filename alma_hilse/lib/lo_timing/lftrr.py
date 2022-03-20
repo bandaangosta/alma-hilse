@@ -1,17 +1,19 @@
-#!/usr/bin/env python
-
 import struct
 import sys
 import math
-from CCL.AmbManager import AmbManager
+try:
+    from CCL.AmbManager import AmbManager
+    import ControlExceptions
+except ModuleNotFoundError:
+    print("Failed to import CCL.AmbManager or ControlExceptions")
 
-# Following PYTHONPATH runtime modification is temporary. This should be done with proper package installation (TODO).
-sys.path.insert(1, "/users/jortiz/dev/hilse/venv/lib/python3.6/site-packages")
+# # Following PYTHONPATH runtime modification is temporary. This should be done with proper package installation (TODO).
+# sys.path.insert(1, "/users/jortiz/dev/hilse/venv/lib/python3.6/site-packages")
 
 from rich.table import Table
 from rich.console import Console
 from rich.text import Text
-import typer
+# import typer
 
 ## Definitions
 # LFTRR/LORR CAN bus definitions
@@ -40,29 +42,29 @@ FLAG_TE_LONG = 0b10 # clear with CLEAR_FLAGS
 RCA_RESYNC_TE = 0x00081
 RCA_CLEAR_FLAGS = 0x00082
 
-# Command-line application commands and subcommands based in Typer
-app = typer.Typer(add_completion=True)
+# # Command-line application commands and subcommands based in Typer
+# app = typer.Typer(add_completion=True)
 
-@app.callback()
-def callback():
-    """
-    Obtain basic status of HILSE LFTRR device and issue resync command.
+# @app.callback()
+# def callback():
+#     """
+#     Obtain basic status of HILSE LFTRR device and issue resync command.
 
-    Referring to the status, a stripped down version of the LORR status is presented,
-    focusing only on variables relevant to HILSE.
+#     Referring to the status, a stripped down version of the LORR status is presented,
+#     focusing only on variables relevant to HILSE.
 
-    Usage:
+#     Usage:
 
-    \b
-    hil_lftrr.py        # Display LFTRR status
-    hil_lftrr.py status # Display LFTRR status
-    hil_lftrr.py resync # Resync TE to central reference
-    hil_lftrr.py clear  # Clear TE and PLL error flags
+#     \b
+#     hil_lftrr.py        # Display LFTRR status
+#     hil_lftrr.py status # Display LFTRR status
+#     hil_lftrr.py resync # Resync TE to central reference
+#     hil_lftrr.py clear  # Clear TE and PLL error flags
 
-    """
+#     """
 
 
-@app.command(short_help='LFTRR healthcheck')
+# @app.command(short_help='LFTRR healthcheck')
 def status():
     '''General healthcheck of the LFTRR, limited to relevant variables for HILSE'''
 
@@ -79,7 +81,11 @@ def status():
     table.add_column('Value', justify='right')
 
     # Received optical power
-    monitor = mgr.monitor(CAN_CHANNEL, CAN_NODE, RCA_RX_OPT_PWR)
+    try:
+        monitor = mgr.monitor(CAN_CHANNEL, CAN_NODE, RCA_RX_OPT_PWR)
+    except ControlExceptions.CAMBErrorEx:
+        raise Exception(f"Node {hex(CAN_NODE)} not found on CAN bus")
+
     power_raw = struct.unpack(">H", monitor[0])
     power_mw = power_raw[0] * 20/4095
     power_dbm = 10 * math.log10(power_mw)
@@ -158,10 +164,10 @@ def status():
     console.print(table)
     print()
 
-    print("Run 'hil_lftrr resync' to sync to central reference and clear flags")
+    print("Run 'alma-hilse timing resync' to sync to central reference and clear flags")
     print()
 
-@app.command("resync", short_help='Resync TE to central reference')
+# @app.command("resync", short_help='Resync TE to central reference')
 def resync_te():
     try:
         mgr = AmbManager('DMC')
@@ -173,7 +179,7 @@ def resync_te():
     print("Resync command was sent")
     status()
 
-@app.command("clear", short_help='Clear TE and PLL error flags')
+# @app.command("clear", short_help='Clear TE and PLL error flags')
 def clear_flags():
     try:
         mgr = AmbManager('DMC')
@@ -184,12 +190,12 @@ def clear_flags():
 
     print("Clear flags command was sent")
 
-def main():
-    if len(sys.argv) == 1:
-        status()
-    else:
-        app()
+# def main():
+#     if len(sys.argv) == 1:
+#         status()
+#     else:
+#         app()
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
 
