@@ -41,7 +41,7 @@ def get_drx_status():
     table.add_column('Avg pwr \[dBm]', justify='right')
     table.add_column('Parity counter \[]', justify='right')
 
-    # Received optical power
+    # Received optical power and parity counter per bit
     for channel, node, rca_pwr, rca_parity, label in [
         (CAN_CHANNEL_DRX0, CAN_NODE_DRX0, RCA_GET_SIGNAL_AVG_D, RCA_GET_PARITY_COUNTER_D, "DRX0 bit D"),
         (CAN_CHANNEL_DRX0, CAN_NODE_DRX0, RCA_GET_SIGNAL_AVG_C, RCA_GET_PARITY_COUNTER_C, "DRX0 bit C"),
@@ -69,7 +69,7 @@ def get_drx_status():
         except ControlExceptions.CAMBErrorEx:
             raise Exception(f"Node {hex(node)} not found on CAN bus")
 
-        parity_counter = struct.unpack('8B', monitor[0])[0]
+        parity_counter = struct.unpack('>Q', monitor[0])[0]
 
         table.add_row(
             label,

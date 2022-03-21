@@ -5,8 +5,8 @@ with open("README.md", "r") as f:
 
 setuptools.setup(
     name="alma-hilse",
-    version="0.1.0",
-    description="ALMA Hardware-In-the-Loop Simulation Environment monitoring and testing package",
+    version="0.1.1",
+    description="ALMA Hardware-In-the-Loop Simulation Environment monitoring and verification package",
     long_description=readme,
     long_description_content_type="text/markdown",
     author="Jose L. Ortiz / ADE",
