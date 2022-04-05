@@ -43,6 +43,11 @@ RANGE_TE_OFFSET_EQ = 2
 
 class Lftrr:
     def __init__(self, abm=None, node=None, channel=None) -> None:
+        if abm is None:
+            self.abm = CAN_ABM
+        else:
+            self.abm = abm
+
         try:
             # This import is done locally to avoid blocking response in case AmbManager is not available
             from CCL.AmbManager import AmbManager
@@ -53,15 +58,10 @@ class Lftrr:
             raise
         else:
             try:
-                self.mgr = AmbManager(abm)
+                self.mgr = AmbManager(self.abm)
                 self.ControlExceptions = ControlExceptions
             except Exception as e:
-                raise Exception(f"Failed to instantiate {abm} AmbManager")
-
-        if abm is None:
-            self.abm = CAN_ABM
-        else:
-            self.abm = abm
+                raise Exception(f"Failed to instantiate {self.abm} AmbManager")
 
         if node is None:
             self.node = CAN_NODE

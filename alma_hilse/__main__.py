@@ -1,7 +1,7 @@
 import typer
 from alma_hilse.lib.lo_timing.lftrr import Lftrr
 
-# from alma_hilse.lib.corr import drx
+from alma_hilse.lib.corr.drx import Drx
 from alma_hilse import __version__
 from typing import Optional
 
@@ -70,26 +70,46 @@ def status_lftrr(
 
 
 @timing_app.command("resync", short_help="Resync TE to central reference")
-def resync_te():
+def resync_te(
+    abm: Optional[str] = typer.Option(None, help="ABM name for AmbManager"),
+    node: Optional[int] = typer.Option(None, help="Node id for LFTRR/LORR"),
+    channel: Optional[int] = typer.Option(None, help="Channel number for LFTRR/LORR"),
+):
     try:
-        lftrr = Lftrr()
+        lftrr = Lftrr(abm, node, channel)
         lftrr.resync_te()
     except Exception as e:
         print(f"Error: {str(e)}")
 
 
 @timing_app.command("clear", short_help="Clear TE and PLL error flags")
-def clear_flags():
+def clear_flags(
+    abm: Optional[str] = typer.Option(None, help="ABM name for AmbManager"),
+    node: Optional[int] = typer.Option(None, help="Node id for LFTRR/LORR"),
+    channel: Optional[int] = typer.Option(None, help="Channel number for LFTRR/LORR"),
+):
     try:
-        lftrr = Lftrr()
+        lftrr = Lftrr(abm, node, channel)
         lftrr.clear_flags()
     except Exception as e:
         print(f"Error: {str(e)}")
 
 
 @corr_app.command("status", short_help="DRX power and status check")
-def status_drx():
-    drx.get_drx_status()
+def status_drx(
+    abm: Optional[str] = typer.Option(None, help="ABM name for AmbManager"),
+    nodes: Optional[str] = typer.Option(
+        None, help="Comma-separate 4 nodes list for DRXs"
+    ),
+    channels: Optional[str] = typer.Option(
+        None, help="Comma-separate 4 channel list for DRXs"
+    ),
+):
+    try:
+        drx = Drx(abm, nodes, channels)
+        drx.get_drx_status()
+    except Exception as e:
+        print(f"Error: {str(e)}")
 
 
 def main():
