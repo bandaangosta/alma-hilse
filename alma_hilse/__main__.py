@@ -58,10 +58,12 @@ def timing_app_callback():
 
 @timing_app.command("status", short_help="LFTRR healthcheck")
 def status_lftrr(
-    abm: Optional[str] = typer.Option(None, help="ABM name for AmbManager")
+    abm: Optional[str] = typer.Option(None, help="ABM name for AmbManager"),
+    node: Optional[int] = typer.Option(None, help="Node id for LFTRR/LORR"),
+    channel: Optional[int] = typer.Option(None, help="Channel number for LFTRR/LORR"),
 ):
     try:
-        lftrr = Lftrr(abm)
+        lftrr = Lftrr(abm, node, channel)
         lftrr.status()
     except Exception as e:
         print(f"Error: {str(e)}")

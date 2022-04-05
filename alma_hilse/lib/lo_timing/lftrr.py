@@ -42,28 +42,38 @@ RANGE_TE_OFFSET_EQ = 2
 
 
 class Lftrr:
-    def __init__(self, abm=None) -> None:
+    def __init__(self, abm=None, node=None, channel=None) -> None:
         try:
             from CCL.AmbManager import AmbManager
             import ControlExceptions
         except ModuleNotFoundError as e:
             raise Exception("Failed to import CCL.AmbManager or ControlExceptions")
+        except:
+            raise
+        else:
+            try:
+                mgr = AmbManager(self.abm)
+                self.ControlExceptions = ControlExceptions
+            except Exception as e:
+                raise Exception(f"Failed to instantiate {self.abm} AmbManager")
 
         if abm is None:
             self.abm = CAN_ABM
         else:
             self.abm = abm
 
+        if node is None:
+            self.node = CAN_NODE
+        else:
+            self.node = node
+
+        if channel is None:
+            self.channel = CAN_CHANNEL
+        else:
+            self.channel = channel
+
     def status(self):
         """General healthcheck of the LFTRR, limited to relevant variables for HILSE"""
-
-        try:
-            mgr = AmbManager(self.abm)
-        except:
-            print()
-            raise Exception("Failed to instantiate DMC AmbManager")
-            print()
-            return
 
         table = Table(title="HILSE LFTRR STATUS")
         table.add_column("Parameter", justify="right")
@@ -71,9 +81,9 @@ class Lftrr:
 
         # Received optical power
         try:
-            monitor = mgr.monitor(CAN_CHANNEL, CAN_NODE, RCA_RX_OPT_PWR)
-        except ControlExceptions.CAMBErrorEx:
-            raise Exception(f"Node {hex(CAN_NODE)} not found on CAN bus")
+            monitor = self.mgr.monitor(self.channel, self.node, RCA_RX_OPT_PWR)
+        except self.ControlExceptions.CAMBErrorEx:
+            raise Exception(f"Node {hex(self.node)} not found on CAN bus")
 
         power_raw = struct.unpack(">H", monitor[0])
         power_mw = power_raw[0] * 20 / 4095
@@ -93,7 +103,7 @@ class Lftrr:
         )
 
         # TE length
-        monitor = mgr.monitor(CAN_CHANNEL, CAN_NODE, RCA_TE_LENGTH)
+        monitor = self.mgr.monitor(self.channel, self.node, RCA_TE_LENGTH)
         te_length = struct.unpack(">I", b"\0" + monitor[0])[0]
 
         table.add_row(
@@ -104,7 +114,7 @@ class Lftrr:
         )
 
         # TE offset
-        monitor = mgr.monitor(CAN_CHANNEL, CAN_NODE, RCA_TE_OFFSET_COUNTER)
+        monitor = self.mgr.monitor(self.channel, self.node, RCA_TE_OFFSET_COUNTER)
         te_offset = struct.unpack(">I", b"\0" + monitor[0])[0]
 
         table.add_row(
@@ -115,7 +125,7 @@ class Lftrr:
         )
 
         # STATUS bits
-        monitor = mgr.monitor(CAN_CHANNEL, CAN_NODE, RCA_STATUS)
+        monitor = self.mgr.monitor(self.channel, CAN_NODE, RCA_STATUS)
         status = struct.unpack("2B", monitor[0])
 
         flag_dcm_locked = 1 * bool(status[0] & FLAG_DCM_LOCKED)
