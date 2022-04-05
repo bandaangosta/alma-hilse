@@ -52,10 +52,10 @@ class Lftrr:
             raise
         else:
             try:
-                mgr = AmbManager(self.abm)
+                self.mgr = AmbManager(abm)
                 self.ControlExceptions = ControlExceptions
             except Exception as e:
-                raise Exception(f"Failed to instantiate {self.abm} AmbManager")
+                raise Exception(f"Failed to instantiate {abm} AmbManager")
 
         if abm is None:
             self.abm = CAN_ABM
@@ -83,7 +83,7 @@ class Lftrr:
         try:
             monitor = self.mgr.monitor(self.channel, self.node, RCA_RX_OPT_PWR)
         except self.ControlExceptions.CAMBErrorEx:
-            raise Exception(f"Node {hex(self.node)} not found on CAN bus")
+            raise Exception(f"Node {hex(self.node)}/ch{self.channel} not found on CAN bus")
 
         power_raw = struct.unpack(">H", monitor[0])
         power_mw = power_raw[0] * 20 / 4095
