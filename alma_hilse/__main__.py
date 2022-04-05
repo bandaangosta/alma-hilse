@@ -1,6 +1,7 @@
 import typer
-from alma_hilse.lib.lo_timing import lftrr
-from alma_hilse.lib.corr import drx
+from alma_hilse.lib.lo_timing.lftrr import Lftrr
+
+# from alma_hilse.lib.corr import drx
 from alma_hilse import __version__
 from typing import Optional
 
@@ -11,11 +12,13 @@ app.add_typer(timing_app, name="timing")
 corr_app = typer.Typer(short_help="HILSE correlator related commands")
 app.add_typer(corr_app, name="corr")
 
+
 @app.callback()
 def callback():
     """
     Collection of diagnostics and configuration commands for ALMA HILSE
     """
+
 
 @corr_app.callback()
 def corr_app_callback():
@@ -29,9 +32,11 @@ def corr_app_callback():
 
     """
 
-@app.command(short_help='Show current version')
+
+@app.command(short_help="Show current version")
 def version():
     print(__version__)
+
 
 @timing_app.callback()
 def timing_app_callback():
@@ -50,24 +55,44 @@ def timing_app_callback():
 
     """
 
-@timing_app.command("status", short_help='LFTRR healthcheck')
-def status_lftrr():
-    lftrr.status()
 
-@timing_app.command("resync", short_help='Resync TE to central reference')
+@timing_app.command("status", short_help="LFTRR healthcheck")
+def status_lftrr(
+    abm: Optional[str] = typer.Option(None, help="ABM name for AmbManager")
+):
+    try:
+        lftrr = Lftrr(abm)
+        lftrr.status()
+    except Exception as e:
+        print(f"Error: {str(e)}")
+
+
+@timing_app.command("resync", short_help="Resync TE to central reference")
 def resync_te():
-    lftrr.resync_te()
+    try:
+        lftrr = Lftrr()
+        lftrr.resync_te()
+    except Exception as e:
+        print(f"Error: {str(e)}")
 
-@timing_app.command("clear", short_help='Clear TE and PLL error flags')
+
+@timing_app.command("clear", short_help="Clear TE and PLL error flags")
 def clear_flags():
-    lftrr.clear_flags()
+    try:
+        lftrr = Lftrr()
+        lftrr.clear_flags()
+    except Exception as e:
+        print(f"Error: {str(e)}")
 
-@corr_app.command("status", short_help='DRX power and status check')
+
+@corr_app.command("status", short_help="DRX power and status check")
 def status_drx():
     drx.get_drx_status()
 
+
 def main():
     app()
+
 
 if __name__ == "__main__":
     main()
