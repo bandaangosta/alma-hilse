@@ -44,6 +44,7 @@ RANGE_TE_OFFSET_EQ = 2
 class Lftrr:
     def __init__(self, abm=None, node=None, channel=None) -> None:
         try:
+            # This import is done locally to avoid blocking response in case AmbManager is not available
             from CCL.AmbManager import AmbManager
             import ControlExceptions
         except ModuleNotFoundError as e:
@@ -72,6 +73,12 @@ class Lftrr:
         else:
             self.channel = channel
 
+    def __del__(self):
+        try:
+            del self.mgr
+        except:
+            pass
+
     def status(self):
         """General healthcheck of the LFTRR, limited to relevant variables for HILSE"""
 
@@ -83,7 +90,9 @@ class Lftrr:
         try:
             monitor = self.mgr.monitor(self.channel, self.node, RCA_RX_OPT_PWR)
         except self.ControlExceptions.CAMBErrorEx:
-            raise Exception(f"Node {hex(self.node)}/ch{self.channel} not found on CAN bus")
+            raise Exception(
+                f"Node {hex(self.node)}/ch{self.channel} not found on CAN bus"
+            )
 
         power_raw = struct.unpack(">H", monitor[0])
         power_mw = power_raw[0] * 20 / 4095
@@ -176,13 +185,16 @@ class Lftrr:
     def resync_te(self):
         """Resync LFTRR to external reference from CLO"""
 
-        try:
-            mgr = AmbManager(self.abm)
-        except:
-            raise Exception("Failed to instantiate DMC AmbManager")
-
         self.clear_flags()
-        mgr.command(CAN_CHANNEL, CAN_NODE, RCA_RESYNC_TE, struct.pack("1B", 0x01))
+        try:
+            self.mgr.command(
+                self.channel, self.node, RCA_RESYNC_TE, struct.pack("1B", 0x01)
+            )
+        except self.ControlExceptions.CAMBErrorEx:
+            raise Exception(
+                f"Node {hex(self.node)}/ch{self.channel} not found on CAN bus"
+            )
+
         print("Resync command was sent")
         self.status()
 
@@ -190,10 +202,12 @@ class Lftrr:
         """Clear latched warning and error flags"""
 
         try:
-            mgr = AmbManager(self.abm)
-        except:
-            raise Exception("Failed to instantiate DMC AmbManager")
-
-        mgr.command(CAN_CHANNEL, CAN_NODE, RCA_CLEAR_FLAGS, struct.pack("1B", 0x01))
+            self.mgr.command(
+                self.channel, self.node, RCA_CLEAR_FLAGS, struct.pack("1B", 0x01)
+            )
+        except self.ControlExceptions.CAMBErrorEx:
+            raise Exception(
+                f"Node {hex(self.node)}/ch{self.channel} not found on CAN bus"
+            )
 
         print("Clear flags command was sent")
