@@ -1,12 +1,16 @@
 # alma-hilse
 
-ALMA Hardware-In-the-Loop Simulation Environment monitoring and testing package
+ALMA Hardware-In-the-Loop Simulation Environment setup, monitoring and testing package
 
-The `alma-hilse` package provides a set of commands and libraries aiming to help in the setup, monitoring and testing of the ALMA HILSE infrastructure.
+The `alma-hilse` package provides an application and libraries aiming to help in the setup, monitoring and testing of the ALMA HILSE infrastructure.
 
 ## Installation
 
     pip install alma-hilse
+
+If installed for user only, it may be necessary to modify PATH accordingly by running:
+
+    export PATH=$PATH:$HOME/.local/bin/
 
 ## Installation for development
 
@@ -43,3 +47,13 @@ Following is non-exhaustive list of available commands, for illustrative purpose
     alma-hilse utils --help
     alma-hilse utils get-devices # list devices connected to ABM
     alma-hilse utils turn-on-ambmanager
+    alma-hilse utils array-info # NOT IMPLEMENTED YET (to be based on existing BE scripts)
+
+###  Antenna integration-related commands
+Reports aiming to help in the integration of new antennas to HILSE enviroment. E.g., by collecting relevant information to be used during AOS patch panel fiber movements and following verifications.
+
+    alma-hilse integration --help  # NOT IMPLEMENTED YET
+    alma-hilse integration general-status  # NOT IMPLEMENTED YET (to be based on existing BE scripts)
+    alma-hilse integration lo-resources  # NOT IMPLEMENTED YET (to be based on existing BE scripts)
+    alma-hilse integration dts-resources # NOT IMPLEMENTED YET (to be based on existing BE scripts)
+    alma-hilse integration pad-resources # NOT IMPLEMENTED YET
