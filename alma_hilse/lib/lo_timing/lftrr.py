@@ -195,6 +195,8 @@ class Lftrr:
                 f"Node {hex(self.node)}/ch{self.channel} not found on {self.abm} bus"
             )
 
+        self.clear_flags()
+
         print("Resync command was sent")
         self.status()
 
