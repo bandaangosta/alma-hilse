@@ -32,7 +32,7 @@ Following is a non-exhaustive list of available commands, for illustrative purpo
     alma-hilse timing status # LORR/LFTRR status for HILSE
     alma-hilse timing resync # LORR/LFTRR resync to CLO reference
 
-![lftrr status example](img/lftrr_status.png)
+![lftrr status example](https://raw.githubusercontent.com/bandaangosta/alma-hilse/master/img/lftrr_status.png)
 
 ### Correlator-related commands
     alma-hilse corr --help
@@ -42,7 +42,7 @@ Following is a non-exhaustive list of available commands, for illustrative purpo
     alma-hilse corr eeprom-read # NOT IMPLEMENTED YET
     alma-hilse corr eeprom-write # NOT IMPLEMENTED YET
 
-![lftrr status example](img/drx_status.png)
+![lftrr status example](https://raw.githubusercontent.com/bandaangosta/alma-hilse/master/img/drx_status.png)
 
 ### General environment setup and troubleshooting commands
     alma-hilse utils --help
