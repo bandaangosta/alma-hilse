@@ -91,7 +91,7 @@ class Lftrr:
             monitor = self.mgr.monitor(self.channel, self.node, RCA_RX_OPT_PWR)
         except self.ControlExceptions.CAMBErrorEx:
             raise Exception(
-                f"Node {hex(self.node)}/ch{self.channel} not found on CAN bus"
+                f"Node {hex(self.node)}/ch{self.channel} not found on {self.abm} bus"
             )
 
         power_raw = struct.unpack(">H", monitor[0])
@@ -192,7 +192,7 @@ class Lftrr:
             )
         except self.ControlExceptions.CAMBErrorEx:
             raise Exception(
-                f"Node {hex(self.node)}/ch{self.channel} not found on CAN bus"
+                f"Node {hex(self.node)}/ch{self.channel} not found on {self.abm} bus"
             )
 
         print("Resync command was sent")
@@ -207,7 +207,7 @@ class Lftrr:
             )
         except self.ControlExceptions.CAMBErrorEx:
             raise Exception(
-                f"Node {hex(self.node)}/ch{self.channel} not found on CAN bus"
+                f"Node {hex(self.node)}/ch{self.channel} not found on {self.abm} bus"
             )
 
         print("Clear flags command was sent")

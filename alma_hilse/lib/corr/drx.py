@@ -34,6 +34,13 @@ RCA_GET_PARITY_COUNTER_B = 0x3502
 RCA_GET_MFD_RAW = 0x0250A
 
 
+def str2int(value):
+    if "X" in value.upper():
+        return int(value, 16)
+    else:
+        return int(value)
+
+
 class Drx:
     def __init__(self, abm=None, nodes=None, channels=None) -> None:
         if abm is None:
@@ -67,10 +74,10 @@ class Drx:
             except:
                 raise Exception("Failed to expand nodes list")
 
-            self.node0 = int(_nodes[0])
-            self.node1 = int(_nodes[1])
-            self.node2 = int(_nodes[2])
-            self.node3 = int(_nodes[3])
+            self.node0 = str2int(_nodes[0])
+            self.node1 = str2int(_nodes[1])
+            self.node2 = str2int(_nodes[2])
+            self.node3 = str2int(_nodes[3])
 
         if channels is None:
             self.channel0 = CAN_CHANNEL_DRX0
@@ -97,7 +104,7 @@ class Drx:
     def get_drx_status(self):
         """HILSE correlator DRXs 0 to 3 average bits power"""
 
-        table = Table(title="HILSE CORR DRXs status", row_styles=["b", "", ""])
+        table = Table(title="HILSE CORR DRXs status", row_styles=["o", "", ""])
         table.add_column("DRX/bit", justify="right")
         table.add_column("Avg pwr \[nW]", justify="right")
         table.add_column("Avg pwr \[dBm]", justify="right")
@@ -208,6 +215,7 @@ class Drx:
             except self.ControlExceptions.CAMBErrorEx:
                 raise Exception(f"Node {hex(node)}/ch{channel} not found on {self.abm}")
 
+            # GET_SIGNAL_AVG: 3 Bytes: MSByte first, 24 bits twos complement. 1 nW/count
             power_nw = int.from_bytes(monitor[0], "big", signed=True)
             power_dbm = 10 * math.log10(power_nw / 1e6)
 
@@ -222,6 +230,7 @@ class Drx:
             except self.ControlExceptions.CAMBErrorEx:
                 raise Exception(f"Node {hex(node)}/ch{channel} not found on {self.abm}")
 
+            # GET_DFR_PARITY_COUNTER: 8 bytes
             parity_counter = struct.unpack(">Q", monitor[0])[0]
 
             if rca_mfd_raw is not None:
@@ -232,6 +241,7 @@ class Drx:
                         f"Node {hex(node)}/ch{channel} not found on {self.abm}"
                     )
 
+                # GET_METAFRAME_DELAY_RAW: 3 bytes, number of 62.5MHz clocks counted
                 mfd_raw = struct.unpack(">I", b"\0" + monitor[0])[0]
             else:
                 mfd_raw = ""
