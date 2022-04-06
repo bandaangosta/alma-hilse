@@ -51,7 +51,7 @@ Following is a non-exhaustive list of available commands, for illustrative purpo
     alma-hilse utils array-info # NOT IMPLEMENTED YET (to be based on existing BE scripts)
 
 ###  Antenna integration-related commands
-Reports aiming to help in the integration of new antennas to HILSE enviroment. E.g., by collecting relevant information to be used during AOS patch panel fiber movements and following verifications.
+Generation of reports aiming to help in the integration of new antennas to HILSE enviroment. E.g., by collecting relevant information to be used during AOS patch panel fiber movements and following verifications.
 
     alma-hilse integration --help  # NOT IMPLEMENTED YET
     alma-hilse integration general-status  # NOT IMPLEMENTED YET (to be based on existing BE scripts)
