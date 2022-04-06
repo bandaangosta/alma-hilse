@@ -1,4 +1,4 @@
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 from alma_hilse.lib.lo_timing import lftrr
 from alma_hilse.lib.corr import drx
