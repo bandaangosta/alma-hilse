@@ -1,6 +1,6 @@
 # alma-hilse
 
-ALMA Hardware-In-the-Loop Simulation Environment setup, monitoring and testing package
+ALMA Hardware-In-the-Loop Simulation Environment setup, monitoring and testing package.
 
 The `alma-hilse` package provides an application and libraries aiming to help in the setup, monitoring and testing of the ALMA HILSE infrastructure.
 
@@ -21,7 +21,7 @@ If installed for user only, it may be necessary to modify PATH accordingly by ru
 
 ## Usage
 
-Following is non-exhaustive list of available commands, for illustrative purposes only. Use the following command for all available options:
+Following is a non-exhaustive list of available commands, for illustrative purposes only. Use the following command for all available options:
 
     alma-hilse --help
 
