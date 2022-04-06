@@ -1,8 +1,9 @@
 # alma-hilse
 
-ALMA Hardware-In-the-Loop Simulation Environment setup, monitoring and testing package.
+ALMA Hardware-In-the-Loop Simulation Environment setup, monitoring and verification package.
 
-The `alma-hilse` package provides an application and libraries aiming to help in the setup, monitoring and testing of the ALMA HILSE infrastructure.
+The `alma-hilse` package provides an application and libraries aiming to help in the setup, monitoring and verfication of the ALMA HILSE infrastructure.
+Most online requests are based on the AmbManager object to minimize dependencies.
 
 ## Installation
 

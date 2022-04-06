@@ -1,10 +1,12 @@
 import typer
 from typing import Optional
 
+from alma_hilse import __version__
+
+# Commands and subcommands import
 from alma_hilse.cli import utils
 from alma_hilse.cli import corr
 from alma_hilse.cli import timing
-from alma_hilse import __version__
 
 # Command-line application based on Typer
 app = typer.Typer(add_completion=False)
